@@ -3,6 +3,21 @@ const
   express = require('express'),
   bodyParser = require('body-parser'),
   app = express().use(bodyParser.json()); // creates express http server
+  
+  const firebase = require('firebase');
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAhQiEuCA8SMOeJzJWS_T05UqBbn3mIzqc",
+    authDomain: "richpanel-fb.firebaseapp.com",
+    databaseURL: "https://richpanel-fb-default-rtdb.firebaseio.com",
+    projectId: "richpanel-fb",
+    storageBucket: "richpanel-fb.appspot.com",
+    messagingSenderId: "946133449102",
+    appId: "1:946133449102:web:42073e58c0ac4e07d08cdf"
+  };
+    
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.database().ref('messages');
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 3000, () => console.log(`webhook is listening`));
@@ -31,6 +46,17 @@ app.post('/webhook', (req, res) => {
         let timestr = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
         console.log(id,message,timestamp,datestr,timestr);
+
+        if(id)
+        {        
+          db.push({
+          senderid : id,
+          message : message,
+          timestamp : timestamp,
+          date : datestr,
+          time : timestr
+          })
+        }
       });
 
       // Returns a '200 OK' response to all requests
