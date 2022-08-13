@@ -5,6 +5,7 @@ const
   app = express().use(bodyParser.json()); // creates express http server
   
   const firebase = require('firebase');
+  const https = require('https');
 
   const firebaseConfig = {
     apiKey: "AIzaSyAhQiEuCA8SMOeJzJWS_T05UqBbn3mIzqc",
@@ -49,14 +50,20 @@ app.post('/webhook', (req, res) => {
 
         let fname, lname, profilepic;
 
-        fetch(`https://graph.facebook.com/${id}?fields=first_name,last_name,profile_pic,email&access_token=${page_access_token}`)
-        .then((response) => response.json())
-        .then((data) => function(data)
-        {
-          fname = data.first_name;
-          lname = data.last_name;
-          profilepic = data.profile_pic
-        });
+        https.get(`https://graph.facebook.com/${id}?fields=first_name,last_name,profile_pic,email&access_token=${page_access_token}`, res => {
+          let data = '';
+          res.on('data', chunk => {
+            data += chunk;
+          });
+          res.on('end', () => {
+            data = JSON.parse(data);
+            fname = data.first_name;
+            lname = data.last_name;
+            profilepic = data.profile_pic;
+          })
+        }).on('error', err => {
+          console.log(err.message);
+        })
 
         console.log(id,message,timestamp,datestr,timestr);
 
