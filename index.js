@@ -19,6 +19,8 @@ const
   firebase.initializeApp(firebaseConfig);
   var db = firebase.database().ref('messages');
 
+  var page_access_token = "EAANK1zVBtcoBAIV5SJmlAxGiAEt8vZA5xZASqHwHdkfvMMsJFf0EvsAshWGRrF1nuLZAdZA9L2N010Q4AGNWRRDQ7Q13UsvFr7GCrlp1HfqfDlprWV3BIEgcBL67EfeZBtHNluWg7g96R5ZCDLcZBZB2zFaOzu6FFHq6qxZC2KVtdj7NX4TRu4J4G";
+
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 3000, () => console.log(`webhook is listening`));
 
@@ -45,6 +47,17 @@ app.post('/webhook', (req, res) => {
         let datestr = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
         let timestr = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
+        let fname, lname, profilepic;
+
+        fetch(`https://graph.facebook.com/${id}?fields=first_name,last_name,profile_pic,email&access_token=${page_access_token}`)
+        .then((response) => response.json())
+        .then((data) => function(data)
+        {
+          fname = data.first_name;
+          lname = data.last_name;
+          profilepic = data.profile_pic
+        });
+
         console.log(id,message,timestamp,datestr,timestr);
 
         if(id)
@@ -54,7 +67,10 @@ app.post('/webhook', (req, res) => {
           message : message,
           timestamp : timestamp,
           date : datestr,
-          time : timestr
+          time : timestr,
+          first_name : fname,
+          last_name : lname,
+          profile_pic : profilepic
           })
         }
       });
