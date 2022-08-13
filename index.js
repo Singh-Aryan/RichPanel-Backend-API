@@ -48,8 +48,6 @@ app.post('/webhook', (req, res) => {
         let datestr = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
         let timestr = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
-        let fname, lname, profilepic;
-
         https.get(`https://graph.facebook.com/${id}?fields=first_name,last_name,profile_pic,email&access_token=${page_access_token}`, res => {
           let data = '';
           res.on('data', chunk => {
@@ -57,29 +55,26 @@ app.post('/webhook', (req, res) => {
           });
           res.on('end', () => {
             data = JSON.parse(data);
-            fname = data.first_name;
-            lname = data.last_name;
-            profilepic = data.profile_pic;
+
+            if(id)
+            {        
+              db.push({
+                senderid : id,
+                message : message,
+                timestamp : timestamp,
+                date : datestr,
+                time : timestr,
+                first_name : data.first_name,
+                last_name : data.last_name,
+                profile_pic : data.profile_pic
+              })
+            }
           })
         }).on('error', err => {
           console.log(err.message);
         })
 
         console.log(id,message,timestamp,datestr,timestr);
-
-        if(id)
-        {        
-          db.push({
-          senderid : id,
-          message : message,
-          timestamp : timestamp,
-          date : datestr,
-          time : timestr,
-          first_name : fname,
-          last_name : lname,
-          profile_pic : profilepic
-          })
-        }
       });
 
       // Returns a '200 OK' response to all requests
