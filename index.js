@@ -20,7 +20,7 @@ const
   firebase.initializeApp(firebaseConfig);
   var db = firebase.database().ref('messages');
 
-  var page_access_token = "EAANK1zVBtcoBAIV5SJmlAxGiAEt8vZA5xZASqHwHdkfvMMsJFf0EvsAshWGRrF1nuLZAdZA9L2N010Q4AGNWRRDQ7Q13UsvFr7GCrlp1HfqfDlprWV3BIEgcBL67EfeZBtHNluWg7g96R5ZCDLcZBZB2zFaOzu6FFHq6qxZC2KVtdj7NX4TRu4J4G";
+  var page_access_token = process.env.page_token;
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 3000, () => console.log(`webhook is listening`));
